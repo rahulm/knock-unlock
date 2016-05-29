@@ -1,0 +1,27 @@
+#include "CurieIMU.h"
+
+int ax, ay, az,;
+//    gx, gy, gz;
+    
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  while(!Serial);
+
+  CurieIMU.begin();
+  Serial.println("Started");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  CurieIMU.readMotionSensor(ax, ay, az, gz, gy, gz);
+
+  if (Serial.available() > 0) {
+    Serial.print(ax);
+    Serial.print(" ");
+    Serial.print(ay);
+    Serial.print(" ");
+    Serial.print(az);
+    Serial.println();
+  }
+}

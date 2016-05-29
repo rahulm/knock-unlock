@@ -1,0 +1,45 @@
+const int PIN_POS = 5;
+const int PIN_NEG = 6;
+
+void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
+
+void turnOff() {
+  pinMode(PIN_POS, LOW);
+  pinMode(PIN_NEG, LOW);
+}
+
+void turnFront() {
+  turnOff();
+  pinMode(PIN_POS, HIGH);
+  pinMode(PIN_NEG, LOW);
+}
+
+void turnBack() {
+  turnOff();
+  pinMode(PIN_POS, LOW);
+  pinMode(PIN_NEG, HIGH);
+}
+
+void serialEvent() {
+  char instr[200];
+  int i = 0;
+  while (Serial.available()) {
+    instr[i++] = (char) Serial.read();
+  }
+
+  if (instr == "front" ) turnFront();
+    else if(instr == "back") turnBack();
+    case "off":
+      turnOff();
+      break;
+  }
+}
+
