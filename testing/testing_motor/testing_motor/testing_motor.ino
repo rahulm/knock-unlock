@@ -18,7 +18,7 @@ void turnOff() {
   Serial.println("Turning off");
   Serial.println("");
   digitalWrite(PIN_POS, LOW);
-  analogWrite(PIN_NEG, LOW);
+  digitalWrite(PIN_NEG, LOW);
 }
 
 void turnFront() {
