@@ -2,7 +2,12 @@
 
 // Knock reading properties
 const unsigned long KNOCK_LISTEN_TIMEOUT = 3000;   // 50000 ms = 5 seconds
-const unsigned long minKnockInterval = 150;              // 100 ms    // Might want to make this 150ms
+//const unsigned long minKnockInterval = 150;              // 100 ms    // Might want to make this 150ms
+//const unsigned long minKnockInterval = 180;              // 100 ms    // Might want to make this 150ms
+const unsigned long minKnockInterval = 180;              // 100 ms    // Might want to make this 150ms
+const unsigned int READ_KNOCK_THRESHOLD = 1000;
+//const unsigned int READ_KNOCK_THRESHOLD = 900;
+const unsigned int READ_KNOCK_DURATION = 1100;
 
 // Saved Knocks
 const unsigned long MAX_KNOCKS = 30;
@@ -16,16 +21,22 @@ volatile unsigned int currKnockIndex = 0;                // Used to denote curre
 // Mapping constants
 const unsigned long RANGE_LOW = 0;
 const unsigned long RANGE_HIGH = 100;
-const unsigned long MAX_PERCENT_TOLERANCE = 35;        // Percent difference allowed for valid knock checking. TODO: may need tweaking
+//const unsigned long MAX_PERCENT_TOLERANCE = 35;        // Percent difference allowed for valid knock checking. TODO: may need tweaking
+const unsigned long MAX_PERCENT_TOLERANCE = 45;        // Percent difference allowed for valid knock checking. TODO: may need tweaking
 const unsigned long AVE_PERCENT_TOlERANCE = 25;        // Average percent difference allowed for valid knock checking. TODO: may need tweaking
 
 // Pins
 const unsigned int PIN_ONBOARD_LED = 13;
-const unsigned int PIN_BUTTON = 7;
+const unsigned int PIN_BUTTON = 13;
 const unsigned int PIN_POS = 6;
 const unsigned int PIN_NEG = 5;
-const unsigned int PIN_LED_GREEN = 4;
-const unsigned int PIN_LED_RED = 3;
+const unsigned int PIN_LED_GREEN = 11;
+const unsigned int PIN_LED_RED = 12;
+
+// Motor
+//const unsigned long MOTOR_RUN_TIME = 3000;
+const unsigned long MOTOR_RUN_TIME = 14000;
+const unsigned long MOTOR_OFF_TIME = 2000;
 
 // Debugging
 const boolean DEBUG = true;
@@ -52,10 +63,10 @@ void setup() {
 
   CurieIMU.begin();
   CurieIMU.attachInterrupt(readKnock);
-  //  CurieIMU.setDetectionThreshold(CURIE_IMU_SHOCK, 1000);  // 10 mg
-  //  CurieIMU.setDetectionDuration(CURIE_IMU_SHOCK, 1000);  // 200 ms
-  CurieIMU.setDetectionThreshold(CURIE_IMU_SHOCK, 990);  // 10 mg
-  CurieIMU.setDetectionDuration(CURIE_IMU_SHOCK, 900);  // 200 ms
+  //  CurieIMU.setDetectionThreshold(CURIE_IMU_SHOCK, 990);  // 10 mg
+  //  CurieIMU.setDetectionDuration(CURIE_IMU_SHOCK, 900);  // 200 ms
+  CurieIMU.setDetectionThreshold(CURIE_IMU_SHOCK, READ_KNOCK_THRESHOLD);  // 10 mg
+  CurieIMU.setDetectionDuration(CURIE_IMU_SHOCK, READ_KNOCK_DURATION);  // 200 ms
   CurieIMU.interrupts(CURIE_IMU_SHOCK);
 
   // Set up pins
@@ -153,11 +164,11 @@ void handleSuccess() {
   digitalWrite(PIN_ONBOARD_LED, HIGH);
   digitalWrite(PIN_LED_GREEN, HIGH);
   turnFront();
-  delay(3000);
+  delay(MOTOR_RUN_TIME);
   turnOff();
-  delay(2000);
+  delay(MOTOR_OFF_TIME);
   turnBack();
-  delay(3000);
+  delay(MOTOR_RUN_TIME);
   turnOff();
   digitalWrite(PIN_LED_GREEN, LOW);
   digitalWrite(PIN_ONBOARD_LED, LOW);
@@ -167,7 +178,7 @@ void handleFailure() {
   Serial.println("Failure");
   digitalWrite(PIN_ONBOARD_LED, HIGH);
   digitalWrite(PIN_LED_RED, HIGH);
-  delay(2000);
+  delay(MOTOR_OFF_TIME);
   digitalWrite(PIN_LED_RED, LOW);
   digitalWrite(PIN_ONBOARD_LED, LOW);
 }
@@ -176,10 +187,10 @@ void handleSave() {
   Serial.println("Saved");
   unsigned int i;
   digitalWrite(PIN_LED_GREEN, LOW);
-  for (i = 0; i < 10; ++i) {
+  for (i = 0; i < 4; ++i) {
     digitalWrite(PIN_LED_GREEN, HIGH);
     digitalWrite(PIN_ONBOARD_LED, HIGH);
-    delay(200);
+    delay(800);
     digitalWrite(PIN_ONBOARD_LED, LOW);
     digitalWrite(PIN_LED_GREEN, LOW);
   }
